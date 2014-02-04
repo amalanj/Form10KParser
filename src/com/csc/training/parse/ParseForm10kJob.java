@@ -3,7 +3,7 @@ package com.csc.training.parse;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.FloatWritable;
 import org.apache.hadoop.mapred.FileInputFormat;
 import org.apache.hadoop.mapred.FileOutputFormat;
 import org.apache.hadoop.mapred.JobClient;
@@ -24,7 +24,7 @@ public class ParseForm10kJob extends Configured implements Tool {
 		conf.setJobName("ParseForm10kJob");
 
 		conf.setMapOutputKeyClass(ParseForm10kMapKey.class);
-		conf.setMapOutputValueClass(IntWritable.class);
+		conf.setMapOutputValueClass(FloatWritable.class);
 
 		conf.setMapperClass(ParseForm10kMapper.class);
 		conf.setReducerClass(ParseForm10kReducer.class);
@@ -33,7 +33,7 @@ public class ParseForm10kJob extends Configured implements Tool {
 		conf.setOutputFormat(TextOutputFormat.class);
 		
 		conf.setOutputKeyClass(Text.class);
-		conf.setOutputValueClass(IntWritable.class);
+		conf.setOutputValueClass(FloatWritable.class);
 		
 		FileInputFormat.setInputPaths(conf, arg0[0]);
 		FileOutputFormat.setOutputPath(conf, new Path(arg0[1]));

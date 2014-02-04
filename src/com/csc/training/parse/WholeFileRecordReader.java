@@ -54,8 +54,8 @@ public class WholeFileRecordReader implements RecordReader<NullWritable, ParseFo
 				String indexBy = "CONSOLIDATED BALANCE SHEETS (USD $)";
 				String fileContent = new String(contents);
 				
-				String companyName = fileContent.substring(fileContent.indexOf(companyNameTitle)
-						+ companyNameTitle.length(), fileContent.indexOf(cikTitle)).trim();
+				String companyName = fileContent.substring(fileContent.toLowerCase().indexOf(companyNameTitle.toLowerCase())
+						+ companyNameTitle.length(), fileContent.toLowerCase().indexOf(cikTitle.toLowerCase())).trim();
 
 				String[] allHtml = fileContent.split("<html>");
 				for (String eachHtml : allHtml) {
