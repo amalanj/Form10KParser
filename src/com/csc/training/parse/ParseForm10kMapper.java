@@ -31,9 +31,10 @@ public class ParseForm10kMapper extends MapReduceBase implements
 		ParseForm10kMapKey mapKey = null;
 		FloatWritable mapValue = null;
 
-		String actualContent = null;
 		String companyName = values.getCompanyName();
-		actualContent = values.getActualContent();
+		String inUnits = values.getUnits();
+		String actualContent = values.getActualContent();
+		
 
 		if (actualContent != null && actualContent.trim().length() > 0) {
 			Document doc = Jsoup.parse(actualContent);
@@ -57,7 +58,6 @@ public class ParseForm10kMapper extends MapReduceBase implements
 				}
 			}
 			
-			//int assetStartIndex = 0, assetStopIndex = 0, assetTotal = 0, nonAssetTotal = 0;
 			Map<String, Integer> skipIndexMap = new HashMap<String, Integer>();
 
 			for (int outerArray = 0; outerArray < trtd2D.length; outerArray++) {
@@ -77,30 +77,23 @@ public class ParseForm10kMapper extends MapReduceBase implements
 				if(outerArray != skipIndexMap.get("assetTotal") 
 						&& (skipIndexMap.get("nonAssetTotal") == null || outerArray != skipIndexMap.get("nonAssetTotal")) 
 						&& (skipIndexMap.get("nonAsset") == null || outerArray != skipIndexMap.get("nonAsset"))){
-					/*int col1 = Integer.parseInt(trtd2D[0][1].trim()
-							.substring(trtd2D[0][1].trim().length() - 4,
-									trtd2D[0][1].trim().length()));
-					int col2 = Integer.parseInt(trtd2D[0][2].trim()
-							.substring(trtd2D[0][2].trim().length() - 4,
-									trtd2D[0][2].trim().length()));*/
-					int col1 = Integer.parseInt(trtd2D[0][1].substring(9,13));
-					int col2 = Integer.parseInt(trtd2D[0][2].substring(9,13));
-					String val1 = trtd2D[outerArray][1];
-					val1 = convert(val1);
-					if(val1.trim().length() > 1){
-						mapKey = new ParseForm10kMapKey(companyName, col1);
-						mapValue = new FloatWritable();
-						mapValue.set(Float.parseFloat(val1.trim()));
-						output.collect(mapKey, mapValue);
-					}
-					
-					String val2 = trtd2D[outerArray][2];
-					val2 = convert(val2);				
-					if(val2.trim().length() > 1){
-						mapKey = new ParseForm10kMapKey(companyName, col2);
-						mapValue = new FloatWritable();
-						mapValue.set(Float.parseFloat(val2.trim()));
-						output.collect(mapKey, mapValue);
+					if (! trtd2D[outerArray][0].toLowerCase().startsWith("Total".toLowerCase().trim()) 
+							|| trtd2D[outerArray][0].contains(":")){
+						for(int i=1; i< trtd2D[0].length; i++){
+							int col = Integer.parseInt(trtd2D[0][i].substring(9,13));
+							String val = trtd2D[outerArray][i];
+							val = convert(val);
+							if(val.trim().length() > 1){
+								mapKey = new ParseForm10kMapKey(companyName, col);
+								mapValue = new FloatWritable();
+								Float floatVal = Float.parseFloat(val.trim());
+								if(inUnits.trim().equalsIgnoreCase("Thousands".trim())){
+									floatVal = floatVal / 1000;
+								}
+								mapValue.set(floatVal);
+								output.collect(mapKey, mapValue);
+							}
+						}
 					}
 				}
 				

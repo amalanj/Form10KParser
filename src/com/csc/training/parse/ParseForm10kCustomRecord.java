@@ -10,15 +10,26 @@ public class ParseForm10kCustomRecord implements WritableComparable<ParseForm10k
 	
 	public ParseForm10kCustomRecord(){}
 	
-	public ParseForm10kCustomRecord(String companyName, String actualContent) {
+	public ParseForm10kCustomRecord(String companyName, String units, String actualContent) {
 		this.companyName = companyName;
+		this.units = units;
 		this.actualContent = actualContent;
 	}
 
 	private String companyName;
 	
 	private String actualContent;
+	
+	private String units;
 		
+	public String getUnits() {
+		return units;
+	}
+
+	public void setUnits(String units) {
+		this.units = units;
+	}
+
 	public String getCompanyName() {
 		return companyName;
 	}
@@ -39,6 +50,7 @@ public class ParseForm10kCustomRecord implements WritableComparable<ParseForm10k
 	public void readFields(DataInput in) throws IOException {
 
 		this.companyName = in.readUTF();
+		this.units = in.readUTF();
 		this.actualContent = in.readUTF();
 		
 	}
@@ -47,6 +59,7 @@ public class ParseForm10kCustomRecord implements WritableComparable<ParseForm10k
 	public void write(DataOutput out) throws IOException {
 		
 		out.writeUTF(companyName);
+		out.writeUTF(units);
 		out.writeUTF(this.actualContent);
 		
 	}

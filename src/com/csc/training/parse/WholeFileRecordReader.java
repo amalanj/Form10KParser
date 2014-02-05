@@ -1,6 +1,9 @@
 package com.csc.training.parse;
 
 import java.io.IOException;
+import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
@@ -58,14 +61,31 @@ public class WholeFileRecordReader implements RecordReader<NullWritable, ParseFo
 						+ companyNameTitle.length(), fileContent.toLowerCase().indexOf(cikTitle.toLowerCase())).trim();
 
 				String[] allHtml = fileContent.split("<html>");
+				String inUnits = new String();
+				String unitsPattern = "(?<=CONSOLIDATED\\sBALANCE\\sSHEETS\\s\\(USD\\s\\$\\)\\<br\\>In\\s)(.*)(\\,)";
+				Pattern pattern = Pattern.compile(unitsPattern);
+				Matcher matcher = null;
 				for (String eachHtml : allHtml) {
-					if (eachHtml.toLowerCase().indexOf(indexBy.toLowerCase()) > 0) {
+					if (eachHtml.toLowerCase().indexOf(indexBy.toLowerCase()) > 0) {				
 						actualContent = new String(eachHtml);
+						Scanner scanner = new Scanner(actualContent);
+						while (scanner.hasNextLine()) {
+						  String line = scanner.nextLine();
+						  if (line.toLowerCase().indexOf(indexBy.toLowerCase()) > 0) {
+							  matcher = pattern.matcher(line);
+							  while (matcher.find()){
+								  inUnits = matcher.group(1);
+							  }
+							  break;
+						  }
+						}
+						scanner.close();
 						break;
 					}
 				}
 				
 				value.setCompanyName(companyName);
+				value.setUnits(inUnits);
 				value.setActualContent(actualContent);
 			} finally {
 				IOUtils.closeStream(in);
