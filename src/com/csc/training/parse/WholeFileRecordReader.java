@@ -63,7 +63,7 @@ public class WholeFileRecordReader implements RecordReader<NullWritable, ParseFo
 				String[] allHtml = fileContent.split("<html>");
 				String inUnits = new String();
 				String unitsPattern = "(?<=CONSOLIDATED\\sBALANCE\\sSHEETS\\s\\(USD\\s\\$\\)\\<br\\>In\\s)(.*)(\\,)";
-				Pattern pattern = Pattern.compile(unitsPattern);
+				Pattern pattern = Pattern.compile(unitsPattern, Pattern.CASE_INSENSITIVE);
 				Matcher matcher = null;
 				for (String eachHtml : allHtml) {
 					if (eachHtml.toLowerCase().indexOf(indexBy.toLowerCase()) > 0) {				
